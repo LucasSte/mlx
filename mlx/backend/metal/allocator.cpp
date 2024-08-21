@@ -17,7 +17,9 @@ Allocator& allocator() {
 }
 
 void* Buffer::raw_ptr() {
-  return static_cast<MTL::Buffer*>(ptr_)->contents();
+  auto * ptr = (uint8_t*)static_cast<MTL::Buffer*>(ptr_)->contents();
+  ptr += 8;
+  return (void*)ptr;
 }
 
 } // namespace allocator
@@ -186,10 +188,11 @@ size_t MetalAllocator::set_wired_limit(size_t limit) {
 
 Buffer MetalAllocator::malloc(size_t size, bool allow_swap /* = false */) {
   // Metal doesn't like empty buffers
-  if (size == 0) {
-    return Buffer{nullptr};
-  }
+//  if (size == 0) {
+//    return Buffer{nullptr};
+//  }
 
+  size += 8;
   // More helpful message if maximum buffer length is exceeded
   if (size > device_->maxBufferLength()) {
     std::ostringstream msg;
@@ -254,7 +257,10 @@ Buffer MetalAllocator::malloc(size_t size, bool allow_swap /* = false */) {
 
   residency_set_.insert(buf);
 
-  return Buffer{static_cast<void*>(buf)};
+  Buffer ret_buf = Buffer{static_cast<void*>(buf)};
+  auto raw_ptr = (uint8_t*)ret_buf.raw_ptr() - 8;
+  *(uint64_t *)raw_ptr = (uint64_t) ret_buf.ptr();
+  return ret_buf;
 }
 
 void MetalAllocator::clear_cache() {
