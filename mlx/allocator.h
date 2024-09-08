@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <atomic>
 
 namespace mlx::core::allocator {
 
@@ -26,6 +27,16 @@ class Buffer {
   void* ptr() {
     return ptr_;
   };
+};
+
+struct MemControl {
+  void *mtl_ptr;
+  std::atomic<uint8_t> rc;
+
+  static MemControl* mem_control_ptr(void * raw_ptr) {
+    uint8_t* offset_ptr = reinterpret_cast<uint8_t*>(raw_ptr) - sizeof(MemControl);
+    return reinterpret_cast<MemControl*>(offset_ptr);
+  }
 };
 
 Buffer malloc(size_t size);

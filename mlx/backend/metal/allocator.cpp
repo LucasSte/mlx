@@ -18,7 +18,7 @@ Allocator& allocator() {
 
 void* Buffer::raw_ptr() {
   auto * ptr = (uint8_t*)static_cast<MTL::Buffer*>(ptr_)->contents();
-  ptr += 8;
+  ptr += sizeof(MemControl);
   return (void*)ptr;
 }
 
@@ -192,7 +192,7 @@ Buffer MetalAllocator::malloc(size_t size, bool allow_swap /* = false */) {
 //    return Buffer{nullptr};
 //  }
 
-  size += 8;
+  size += sizeof(allocator::MemControl);
   // More helpful message if maximum buffer length is exceeded
   if (size > device_->maxBufferLength()) {
     std::ostringstream msg;
@@ -258,8 +258,9 @@ Buffer MetalAllocator::malloc(size_t size, bool allow_swap /* = false */) {
   residency_set_.insert(buf);
 
   Buffer ret_buf = Buffer{static_cast<void*>(buf)};
-  auto raw_ptr = (uint8_t*)ret_buf.raw_ptr() - 8;
-  *(uint64_t *)raw_ptr = (uint64_t) ret_buf.ptr();
+  allocator::MemControl* ctr_ptr = allocator::MemControl::mem_control_ptr(ret_buf.raw_ptr());
+  ctr_ptr->mtl_ptr = ret_buf.ptr();
+  ctr_ptr->rc = 1;
   return ret_buf;
 }
 
@@ -274,6 +275,12 @@ void MetalAllocator::free(Buffer buffer) {
   if (buf == nullptr) {
     return;
   }
+  auto* ctr_ptr = reinterpret_cast<allocator::MemControl*>(buf->contents());
+  uint8_t ref = ctr_ptr->rc.fetch_sub(1);
+  if (ref > 1) {
+    return;
+  }
+
   std::unique_lock lk(mutex_);
   residency_set_.erase(buf);
   active_memory_ -= buf->length();
