@@ -7,6 +7,7 @@
 #include <mach/vm_page_size.h>
 #include <unistd.h>
 #include <cstdlib>
+#include <iostream>
 
 namespace mlx::core {
 
@@ -261,6 +262,7 @@ Buffer MetalAllocator::malloc(size_t size, bool allow_swap /* = false */) {
   allocator::MemControl* ctr_ptr = allocator::MemControl::mem_control_ptr(ret_buf.raw_ptr());
   ctr_ptr->mtl_ptr = ret_buf.ptr();
   ctr_ptr->rc = 1;
+  std::cout << "Allocated: " << ret_buf.raw_ptr() << std::endl;
   return ret_buf;
 }
 

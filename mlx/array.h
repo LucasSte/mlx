@@ -6,6 +6,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include "mlx/allocator.h"
 #include "mlx/dtype.h"
@@ -218,6 +219,7 @@ class array {
     Data(const Data& d) = delete;
     Data& operator=(const Data& d) = delete;
     ~Data() {
+      std::cout << "Destructing Data shared ptr" << std::endl;
       d(buffer);
     }
   };

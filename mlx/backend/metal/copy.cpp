@@ -7,6 +7,7 @@
 #include "mlx/backend/metal/kernels.h"
 #include "mlx/backend/metal/utils.h"
 #include "mlx/primitives.h"
+#include <iostream>
 
 namespace mlx::core {
 
@@ -21,6 +22,7 @@ void copy_gpu(const array& in, array& out, CopyType ctype, const Stream& s) {
       // If the output has the same type as the input then there is nothing to
       // copy, just use the buffer.
       if (in.dtype() == out.dtype()) {
+        std::cout << "Moved buffer" << std::endl;
         return;
       }
     } else {
@@ -31,6 +33,7 @@ void copy_gpu(const array& in, array& out, CopyType ctype, const Stream& s) {
           in.flags());
     }
   } else {
+    std::cout << "Allocating now" << std::endl;
     out.set_data(allocator::malloc_or_wait(out.nbytes()));
   }
   if (ctype == CopyType::GeneralGeneral) {
