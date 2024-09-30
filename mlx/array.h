@@ -219,7 +219,6 @@ class array {
     Data(const Data& d) = delete;
     Data& operator=(const Data& d) = delete;
     ~Data() {
-      std::cout << "Destructing Data shared ptr" << std::endl;
       d(buffer);
     }
   };
