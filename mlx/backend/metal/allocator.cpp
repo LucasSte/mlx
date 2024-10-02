@@ -23,6 +23,10 @@ void* Buffer::raw_ptr() {
   return (void*)ptr;
 }
 
+size_t Buffer::size() {
+  return static_cast<MTL::Buffer*>(ptr_)->length();
+}
+
 } // namespace allocator
 
 namespace metal {
@@ -296,7 +300,7 @@ void MetalAllocator::free(Buffer buffer) {
 }
 
 size_t MetalAllocator::size(Buffer buffer) const {
-  return static_cast<MTL::Buffer*>(buffer.ptr())->length();
+  return static_cast<MTL::Buffer*>(buffer.ptr())->length() - sizeof(allocator::MemControl);
 }
 
 MetalAllocator& allocator() {

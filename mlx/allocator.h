@@ -20,6 +20,8 @@ class Buffer {
   // Get the raw data pointer from the buffer
   void* raw_ptr();
 
+  size_t size();
+
   // Get the buffer pointer from the buffer
   const void* ptr() const {
     return ptr_;
@@ -36,6 +38,15 @@ struct MemControl {
   static MemControl* mem_control_ptr(void * raw_ptr) {
     uint8_t* offset_ptr = reinterpret_cast<uint8_t*>(raw_ptr) - sizeof(MemControl);
     return reinterpret_cast<MemControl*>(offset_ptr);
+  }
+
+  static size_t usable_size(Buffer buffer) {
+    return buffer.size() - sizeof(MemControl);
+  }
+
+  static size_t usable_size(void *raw_ptr) {
+    MemControl * ctr = MemControl::mem_control_ptr(raw_ptr);
+    return MemControl::usable_size(Buffer(ctr->mtl_ptr));
   }
 };
 
