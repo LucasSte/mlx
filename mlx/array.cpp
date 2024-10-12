@@ -185,6 +185,15 @@ void array::move_shared_buffer(array other) {
   move_shared_buffer(other, other.strides(), other.flags(), other.data_size());
 }
 
+void array::set_storage_offset(size_t offset) {
+  array_desc_->data_ptr = static_cast<void*>(
+        static_cast<uint8_t*>(array_desc_->data_ptr) + offset);
+}
+
+size_t array::storage_offset() const {
+  return reinterpret_cast<size_t>(array_desc_->data_ptr) - reinterpret_cast<size_t>(array_desc_->data->buffer.raw_ptr());
+}
+
 array::~array() {
   if (array_desc_ == nullptr) {
     return;

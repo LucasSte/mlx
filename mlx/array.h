@@ -433,6 +433,9 @@ class array {
     array_desc_ = other.array_desc_;
   }
 
+  void set_storage_offset(size_t offset);
+  size_t storage_offset() const;
+
   ~array();
 
  private:
