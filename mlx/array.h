@@ -434,6 +434,7 @@ class array {
   }
 
   void set_storage_offset(size_t offset);
+  void set_strides(std::vector<size_t> strides, bool is_contiguous);
   size_t storage_offset() const;
 
   ~array();
