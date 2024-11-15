@@ -185,40 +185,6 @@ void array::move_shared_buffer(array other) {
   move_shared_buffer(other, other.strides(), other.flags(), other.data_size());
 }
 
-void array::set_storage_offset(size_t offset) {
-  array_desc_->data_ptr = static_cast<void*>(
-        static_cast<uint8_t*>(array_desc_->data_ptr) + offset);
-}
-
-void array::set_strides(std::vector<size_t> strides, bool is_contiguous) {
-  array_desc_->strides = std::move(strides);
-
-  // Is contiguous?
-  array_desc_->flags.contiguous = is_contiguous;
-
-  const std::vector<int> &shape_ref = array_desc_->shape;
-  const std::vector<size_t> strides_ref = array_desc_->strides;
-  // row contiguous?
-  bool row_contiguous = (strides_ref.back() == 1);
-  for (size_t i=0; i<shape_ref.size()-1; i++) {
-    row_contiguous &= (
-        strides_ref[i] == (static_cast<size_t>(shape_ref[i+1])*strides_ref[i+1])
-        || shape_ref[i] == 1
-        );
-  }
-  array_desc_->flags.row_contiguous = row_contiguous;
-
-  // col contiguous?
-  bool col_contiguous = (strides_ref[0] == 1);
-  for (size_t i = 1; i<shape_ref.size(); i++) {
-    col_contiguous &= (
-        strides_ref[i] == (static_cast<size_t>(shape_ref[i-1])*strides_ref[i+1])
-        || shape_ref[i] == 1
-        );
-  }
-  array_desc_->flags.col_contiguous = col_contiguous;
-}
-
 size_t array::storage_offset() const {
   return reinterpret_cast<size_t>(array_desc_->data_ptr) - reinterpret_cast<size_t>(array_desc_->data->buffer.raw_ptr());
 }
