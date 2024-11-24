@@ -35,6 +35,8 @@ class array {
    * types. */
   explicit array(const std::complex<float>& val, Dtype dtype = complex64);
 
+  array();
+
   template <typename It>
   array(
       It data,

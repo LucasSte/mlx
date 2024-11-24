@@ -24,6 +24,8 @@ bool retain_graph() {
 
 } // namespace
 
+array::array() : array_desc_(std::make_shared<ArrayDesc>(std::vector<int>{}, float32)) {}
+
 array::array(const std::complex<float>& val, Dtype dtype /* = complex64 */)
     : array_desc_(std::make_shared<ArrayDesc>(Shape{}, dtype)) {
   auto cval = static_cast<complex64_t>(val);
