@@ -337,4 +337,8 @@ array::ArrayIterator::reference array::ArrayIterator::operator*() const {
   return reshape(slice(arr, start, end), shape);
 };
 
+bool array::is_null() const {
+  return array_desc_->data->buffer.ptr() == nullptr;
+}
+
 } // namespace mlx::core

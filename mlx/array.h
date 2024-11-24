@@ -436,6 +436,7 @@ class array {
   }
 
   size_t storage_offset() const;
+  bool is_null() const;
 
   ~array();
 
