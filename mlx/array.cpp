@@ -338,7 +338,8 @@ array::ArrayIterator::reference array::ArrayIterator::operator*() const {
 };
 
 bool array::is_null() const {
-  return array_desc_->data->buffer.ptr() == nullptr;
+  return array_desc_ == nullptr || (array_desc_->data == nullptr) ||
+      (array_desc_->data->buffer.ptr() == nullptr);
 }
 
 } // namespace mlx::core
