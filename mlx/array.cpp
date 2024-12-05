@@ -188,6 +188,8 @@ void array::move_shared_buffer(array other) {
 }
 
 size_t array::storage_offset() const {
+  if (array_desc_ == nullptr || array_desc_->data_ptr == nullptr || array_desc_->data == nullptr || array_desc_->data->buffer.ptr() == nullptr)
+    return 0;
   return reinterpret_cast<size_t>(array_desc_->data_ptr) - reinterpret_cast<size_t>(array_desc_->data->buffer.raw_ptr());
 }
 
@@ -338,7 +340,13 @@ array::ArrayIterator::reference array::ArrayIterator::operator*() const {
 };
 
 bool array::is_null() const {
-  return array_desc_ == nullptr || (array_desc_->data == nullptr) ||
+  if (array_desc_ == nullptr)
+    return true;
+
+  if (array_desc_->primitive != nullptr)
+    return false;
+
+  return (array_desc_->data == nullptr) ||
       (array_desc_->data->buffer.ptr() == nullptr);
 }
 
