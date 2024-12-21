@@ -1,3 +1,10 @@
+# MLX for MlxTorch
+
+This is a fork specially created for adapting MLX to PyTorch. It contains a couple of changes in the memory 
+allocator to deal with memory synchronization between MLX and PyTorch.
+
+---
+
 # MLX
 
 [**Quickstart**](#quickstart) | [**Installation**](#installation) |
